@@ -22,11 +22,11 @@ export default interface WebAssemblyModule {
 	_Server_Tick: (server: number) => void;
 
 	_WebSocketServerHandler_Create: (server: number) => number;
-	_WebSocketServerHandler_CreateClient: (server: number) => number;
+	_WebSocketServerHandler_CreateClientHandler: (server: number) => number;
 
-	_WebSocketClientHandler_OnConnect: (client: number) => void;
-	_WebSocketClientHandler_OnDisconnect: (client: number) => void;
-	_WebSocketClientHandler_OnError: (client: number) => void;
-	_WebSocketClientHandler_OnMessage: (client: number, pointer: number, length: number) => void;
+	_WebSocketClientHandler_EmitOnConnect: (client: number) => void;
+	_WebSocketClientHandler_EmitOnDisconnect: (client: number) => void;
+	_WebSocketClientHandler_EmitOnError: (client: number) => void;
+	_WebSocketClientHandler_EmitOnMessage: (client: number, pointer: number, length: number) => void;
 
 }
