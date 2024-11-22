@@ -1,9 +1,11 @@
 #ifndef WEBSOCKET_CLIENT_H
 #define WEBSOCKET_CLIENT_H
 
-#include <vector>
 #include <cstdint>
+#include <vector>
 #include "./../../Shared/WebSocket/Binary.h"
+
+class Client;
 
 class WebSocketClientHandler {
 	typedef void (*OnConnectFn)(WebSocketClientHandler *);
@@ -12,8 +14,11 @@ class WebSocketClientHandler {
 	typedef void (*OnMessageFn)(WebSocketClientHandler *, uint8_t *, size_t);
 public:
 
-	WebSocketClientHandler(const char* server_ip);
+	WebSocketClientHandler(Client* client, const char* server_ip);
 	~WebSocketClientHandler();
+
+	inline Client* GetClient() { return this->m_Client; }
+	inline const char* GetServerIP() { return this->m_strServerIP; }
 
 	inline unsigned int GetIndex() { return this->m_uIndex; }
 
@@ -33,6 +38,9 @@ public:
 	long long GetLastPingedAt();
 
 private:
+	Client* m_Client;
+	const char* m_strServerIP;
+
 	unsigned int m_uIndex;
 
 	OnConnectFn m_fnOnConnect = nullptr;

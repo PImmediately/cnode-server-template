@@ -32,6 +32,7 @@ add_custom_target(server
 add_custom_target(client
 	COMMAND emcc
 	${CMAKE_SOURCE_DIR}/Sources/Client/Main.cpp
+	${CMAKE_SOURCE_DIR}/Sources/Client/Client.cpp
 	${CMAKE_SOURCE_DIR}/Sources/Client/WebSocket/WebSocketClientHandler.cpp
 
 	-s ENVIRONMENT='web'

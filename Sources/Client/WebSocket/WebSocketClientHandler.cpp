@@ -21,7 +21,7 @@ enum kWebSocketEvent {
 
 std::vector<WebSocketClientHandler*> WebSocketClientHandler::_s_Instances;
 
-WebSocketClientHandler::WebSocketClientHandler(const char* server_ip) {
+WebSocketClientHandler::WebSocketClientHandler(Client* client, const char* server_ip) : m_Client(client), m_strServerIP(server_ip) {
 	this->_s_Instances.push_back(this);
 
 #ifdef __EMSCRIPTEN__
@@ -58,7 +58,7 @@ WebSocketClientHandler::WebSocketClientHandler(const char* server_ip) {
 		}
 		sockets.push(socket);
 		return (sockets.length - 1);
-	}, server_ip);
+	}, this->GetServerIP());
 #endif
 }
 
