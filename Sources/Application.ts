@@ -10,9 +10,9 @@ export default class Application {
 		return this._httpServer;
 	}
 
-	private _webSocketServer: (WebSocketServer | undefined);
-	public get webSocketServer(): (WebSocketServer | undefined) {
-		return this._webSocketServer;
+	private _wsServer: (WebSocketServer | undefined);
+	public get wsServer(): (WebSocketServer | undefined) {
+		return this._wsServer;
 	}
 
 	private _wasmModule: (WebAssemblyModule | undefined);
@@ -56,11 +56,11 @@ export default class Application {
 
 	public async createWebSocketServer(): Promise<void> {
 
-		this._webSocketServer = new WebSocketServer(this, {
+		this._wsServer = new WebSocketServer(this, {
 			httpServer: this.httpServer
 		});
 
-		this.webSocketServer!.create();
+		this.wsServer!.create();
 
 	}
 
