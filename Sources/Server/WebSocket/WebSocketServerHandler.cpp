@@ -1,11 +1,11 @@
-#include "./WebSocketServer.h"
+#include "./WebSocketServerHandler.h"
 
 #include <emscripten.h>
 #include <memory>
 #include <algorithm>
 #include "./../../Shared/WebSocket/Packet.h"
 
-WebSocketServer::WebSocketServer(Server* server) : m_Server(server) {
+WebSocketServerHandler::WebSocketServerHandler(Server* server) : m_Server(server) {
 	this->m_uIndex = EM_ASM_INT({
 		for (let i = 0; i < servers.length; i++) {
 			if (!servers[i]) {
@@ -18,21 +18,21 @@ WebSocketServer::WebSocketServer(Server* server) : m_Server(server) {
 	});
 }
 
-WebSocketServer::~WebSocketServer() {
+WebSocketServerHandler::~WebSocketServerHandler() {
 	EM_ASM({
 		servers[$0] = null;
 	}, this->GetIndex());
 }
 
-void WebSocketServer::AddClient(WebSocketClient* client) {
+void WebSocketServerHandler::AddClient(WebSocketClientHandler* client) {
 	this->m_Clients.emplace_back(client);
 }
 
-bool WebSocketServer::RemoveClient(WebSocketClient* client) {
+bool WebSocketServerHandler::RemoveClient(WebSocketClientHandler* client) {
 	auto it = std::remove_if(
 		this->m_Clients.begin(),
 		this->m_Clients.end(),
-		[client](const WebSocketClient* p) { return p == client; }
+		[client](const WebSocketClientHandler* p) { return p == client; }
 	);
 	if (it == m_Clients.end()) {
 		return false;
@@ -41,13 +41,13 @@ bool WebSocketServer::RemoveClient(WebSocketClient* client) {
 	return true;
 }
 
-void WebSocketServer::SendToAllClients(Binary* binary) {
-	for (WebSocketClient* client : this->m_Clients) {
+void WebSocketServerHandler::SendToAllClients(Binary* binary) {
+	for (WebSocketClientHandler* client : this->m_Clients) {
 		client->Send(binary);
 	}
 }
 
-void WebSocketServer::SendClientCountToAllClients() {
+void WebSocketServerHandler::SendClientCountToAllClients() {
 	Binary* binary = new Binary();
 	binary->WriteUInt8(static_cast<uint8_t>(Clientbound::ClientCount));
 	binary->WriteVarUInt32(this->GetAcceptedClientCount());
@@ -56,8 +56,8 @@ void WebSocketServer::SendClientCountToAllClients() {
 	delete binary;
 }
 
-void WebSocketServer::Tick() {
-	for (WebSocketClient* client : this->m_Clients) {
+void WebSocketServerHandler::Tick() {
+	for (WebSocketClientHandler* client : this->m_Clients) {
 		client->EmitCachedReceivedMessages();
 	}
 }

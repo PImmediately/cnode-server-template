@@ -5,19 +5,19 @@
 #include <cstdint>
 #include "./../../Shared/WebSocket/Binary.h"
 
-class WebSocketClient {
-	typedef void (*OnConnectFn)(WebSocketClient *);
-	typedef void (*OnDisconnectFn)(WebSocketClient *);
-	typedef void (*OnErrorFn)(WebSocketClient *);
-	typedef void (*OnMessageFn)(WebSocketClient *, uint8_t *, size_t);
+class WebSocketClientHandler {
+	typedef void (*OnConnectFn)(WebSocketClientHandler *);
+	typedef void (*OnDisconnectFn)(WebSocketClientHandler *);
+	typedef void (*OnErrorFn)(WebSocketClientHandler *);
+	typedef void (*OnMessageFn)(WebSocketClientHandler *, uint8_t *, size_t);
 public:
 
-	WebSocketClient(const char* server_ip);
-	~WebSocketClient();
+	WebSocketClientHandler(const char* server_ip);
+	~WebSocketClientHandler();
 
 	inline unsigned int GetIndex() { return this->m_uIndex; }
 
-	static std::vector<WebSocketClient*> _s_Instances;
+	static std::vector<WebSocketClientHandler*> _s_Instances;
 
 	void SetOnConnectCallback(OnConnectFn v){ this->m_fnOnConnect = v; }
 	void SetOnDisconnectCallback(OnDisconnectFn v){ this->m_fnOnDisconnect = v; }

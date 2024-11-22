@@ -41,7 +41,7 @@ export default class WebSocketServer {
 			this.onConnection(client, request);
 		});
 
-		const pointer = this.application.wasmModule._WebSocketServer_Create(this.application.server);
+		const pointer = this.application.wasmModule._WebSocketServerHandler_Create(this.application.server);
 		const serverIndex = this.application.wasmModule.HEAPU32[(pointer + (0 << 2)) >> 2]!;
 		const serverPointer = this.application.wasmModule.HEAPU32[(pointer + (1 << 2)) >> 2]!;
 
@@ -59,7 +59,7 @@ export default class WebSocketServer {
 			throw new Error("The server has not been created.");
 		}
 
-		const pointer = this.application.wasmModule._WebSocketServer_CreateClient(this.pointer);
+		const pointer = this.application.wasmModule._WebSocketServerHandler_CreateClient(this.pointer);
 		const clientIndex = this.application.wasmModule.HEAPU32[(pointer + (0 << 2)) >> 2]!;
 		const clientPointer = this.application.wasmModule.HEAPU32[(pointer + (1 << 2)) >> 2]!;
 

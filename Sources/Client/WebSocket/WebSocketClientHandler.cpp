@@ -1,4 +1,4 @@
-#include "./WebSocketClient.h"
+#include "./WebSocketClientHandler.h"
 
 #include <emscripten.h>
 #include "./../../Shared/WebSocket/Binary.h"
@@ -14,9 +14,9 @@ enum kWebSocketEvent {
 	Message
 };
 
-std::vector<WebSocketClient*> WebSocketClient::_s_Instances;
+std::vector<WebSocketClientHandler*> WebSocketClientHandler::_s_Instances;
 
-WebSocketClient::WebSocketClient(const char* server_ip) {
+WebSocketClientHandler::WebSocketClientHandler(const char* server_ip) {
 	this->_s_Instances.push_back(this);
 
 	this->m_uIndex = EM_ASM_INT({
@@ -26,22 +26,22 @@ WebSocketClient::WebSocketClient(const char* server_ip) {
 		socket.events = new Array();			
 		socket.onopen = (event) => {
 			socket.events.push([1/*kWebSocketEvent::Open*/, undefined, undefined]);
-			Module["__WebSocketClient_CheckEvent"]();
+			Module["__WebSocketClientHandler_CheckEvent"]();
 		};
 		socket.onclose = (event) => {
 			socket.events.push([2/*kWebSocketEvent::Close*/, undefined, undefined]);
-			Module["__WebSocketClient_CheckEvent"]();
+			Module["__WebSocketClientHandler_CheckEvent"]();
 		};
 		socket.onerror = (event) => {
 			socket.events.push([3/*kWebSocketEvent::Error*/, undefined, undefined]);
-			Module["__WebSocketClient_CheckEvent"]();
+			Module["__WebSocketClientHandler_CheckEvent"]();
 		};
 		socket.onmessage = (event) => {
 			const buffer = new Uint8Array(event.data);
 			const pointer = _malloc(buffer.length);
 			Module["HEAPU8"].set(buffer, pointer);
 			socket.events.push([4/*kWebSocketEvent::Message*/, pointer, buffer.byteLength]);
-			Module["__WebSocketClient_CheckEvent"]();
+			Module["__WebSocketClientHandler_CheckEvent"]();
 		};
 
 		for (let i = 0; i < sockets.length; i++) {
@@ -55,7 +55,7 @@ WebSocketClient::WebSocketClient(const char* server_ip) {
 	}, server_ip);
 }
 
-WebSocketClient::~WebSocketClient() {
+WebSocketClientHandler::~WebSocketClientHandler() {
 	this->_s_Instances.erase(
 		std::remove(this->_s_Instances.begin(), this->_s_Instances.end(), this),
 		this->_s_Instances.end()
@@ -74,7 +74,7 @@ WebSocketClient::~WebSocketClient() {
 	}, this->GetIndex());
 }
 
-void WebSocketClient::_PopEvent() {
+void WebSocketClientHandler::_PopEvent() {
 
 	uint32_t pointer = NULL;
 	size_t length = NULL;
@@ -102,13 +102,13 @@ void WebSocketClient::_PopEvent() {
 
 }
 
-bool WebSocketClient::IsOpen() {
+bool WebSocketClientHandler::IsOpen() {
 	return static_cast<bool>(EM_ASM_INT({
 		return (sockets[$0].readyState === WebSocket.OPEN);
 	}), this->GetIndex());
 }
 
-bool WebSocketClient::Send(Binary* binary) {
+bool WebSocketClientHandler::Send(Binary* binary) {
 	uint8_t* buffer = binary->GetBuffer();
 	bool result = EM_ASM_INT({
 		const socket = sockets[$0];
@@ -127,7 +127,7 @@ bool WebSocketClient::Send(Binary* binary) {
 	return result;
 }
 
-void WebSocketClient::Ping() {
+void WebSocketClientHandler::Ping() {
 	Binary* binary = new Binary();
 	binary->WriteUInt8(static_cast<uint8_t>(Serverbound::Ping));
 
@@ -137,13 +137,13 @@ void WebSocketClient::Ping() {
 	delete binary;
 }
 
-long long WebSocketClient::GetLastPingedAt() {
+long long WebSocketClientHandler::GetLastPingedAt() {
 	return this->m_llLastPingedAt;
 }
 
 extern "C" {
-	void EMSCRIPTEN_KEEPALIVE _WebSocketClient_CheckEvent() {
-		for (WebSocketClient* instance : WebSocketClient::_s_Instances) {
+	void EMSCRIPTEN_KEEPALIVE _WebSocketClientHandler_CheckEvent() {
+		for (WebSocketClientHandler* instance : WebSocketClientHandler::_s_Instances) {
 			instance->_PopEvent();
 		}
 	}

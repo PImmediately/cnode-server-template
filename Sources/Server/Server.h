@@ -2,7 +2,7 @@
 #define SERVER_H
 
 #include <vector>
-#include "./WebSocket/WebSocketServer.h"
+#include "./WebSocket/WebSocketServerHandler.h"
 #include <chrono>
 
 class Server {
@@ -12,15 +12,15 @@ public:
 
 	inline char* GetVersionHash() { return this->m_strVersionHash; }
 
-	inline void AddWebSocketServer(WebSocketServer* wsServer) {
+	inline void AddWebSocketServerHandler(WebSocketServerHandler* wsServer) {
 		this->m_WSServers.emplace_back(wsServer);
 	}
 
-	inline bool RemoveWebSocketServer(WebSocketServer* wsServer) {
+	inline bool RemoveWebSocketServerHandler(WebSocketServerHandler* wsServer) {
 		auto it = std::remove_if(
 			this->m_WSServers.begin(),
 			this->m_WSServers.end(),
-			[wsServer](const WebSocketServer* pointer) { return pointer == wsServer; }
+			[wsServer](const WebSocketServerHandler* pointer) { return pointer == wsServer; }
 		);
 		if (it == m_WSServers.end()) {
 			return false;
@@ -34,7 +34,7 @@ public:
 private:
 	char* m_strVersionHash;
 
-	std::vector<WebSocketServer*> m_WSServers;
+	std::vector<WebSocketServerHandler*> m_WSServers;
 
 	unsigned int m_uTPS = 0;
 	std::chrono::steady_clock::time_point m_uLastTPSCheckedAt = std::chrono::high_resolution_clock::now();

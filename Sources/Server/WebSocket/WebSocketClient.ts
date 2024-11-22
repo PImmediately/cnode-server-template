@@ -29,13 +29,13 @@ export default class WebSocketClient {
 
 	private onConnect(): void {
 
-		this.server.application.wasmModule!._WebSocketClient_OnConnect(this.pointer);
+		this.server.application.wasmModule!._WebSocketClientHandler_OnConnect(this.pointer);
 
 	}
 
 	private onDisconnect(event: WebSocket.CloseEvent): void {
 
-		this.server.application.wasmModule!._WebSocketClient_OnDisconnect(this.pointer);
+		this.server.application.wasmModule!._WebSocketClientHandler_OnDisconnect(this.pointer);
 
 		delete this.server.clients[this.index];
 
@@ -43,7 +43,7 @@ export default class WebSocketClient {
 
 	private onError(event: WebSocket.ErrorEvent): void {
 
-		this.server.application.wasmModule!._WebSocketClient_OnError(this.pointer);
+		this.server.application.wasmModule!._WebSocketClientHandler_OnError(this.pointer);
 
 	}
 
@@ -57,7 +57,7 @@ export default class WebSocketClient {
 
 		const pointer = this.server.application.wasmModule!._malloc(buffer.length);
 		this.server.application.wasmModule!.HEAPU8.set(buffer, pointer);
-		this.server.application.wasmModule!._WebSocketClient_OnMessage(this.pointer, pointer, buffer.length);
+		this.server.application.wasmModule!._WebSocketClientHandler_OnMessage(this.pointer, pointer, buffer.length);
 		this.server.application.wasmModule!._free(pointer);
 
 	}

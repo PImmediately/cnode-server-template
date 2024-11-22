@@ -19,8 +19,8 @@ add_custom_target(server
 	COMMAND emcc
 	${CMAKE_SOURCE_DIR}/Sources/Server/Main.cpp
 	${CMAKE_SOURCE_DIR}/Sources/Server/Server.cpp
-	${CMAKE_SOURCE_DIR}/Sources/Server/WebSocket/WebSocketServer.cpp
-	${CMAKE_SOURCE_DIR}/Sources/Server/WebSocket/WebSocketClient.cpp
+	${CMAKE_SOURCE_DIR}/Sources/Server/WebSocket/WebSocketServerHandler.cpp
+	${CMAKE_SOURCE_DIR}/Sources/Server/WebSocket/WebSocketClientHandler.cpp
 
 	-s ENVIRONMENT='node'
 	-s MODULARIZE=1
@@ -32,7 +32,7 @@ add_custom_target(server
 add_custom_target(client
 	COMMAND emcc
 	${CMAKE_SOURCE_DIR}/Sources/Client/Main.cpp
-	${CMAKE_SOURCE_DIR}/Sources/Client/WebSocket/WebSocketClient.cpp
+	${CMAKE_SOURCE_DIR}/Sources/Client/WebSocket/WebSocketClientHandler.cpp
 
 	-s ENVIRONMENT='web'
 	${WASM_FLAGS}

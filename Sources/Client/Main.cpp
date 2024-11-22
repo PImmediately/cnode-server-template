@@ -4,7 +4,7 @@
 #include <regex>
 #include <chrono>
 
-#include "./WebSocket/WebSocketClient.h"
+#include "./WebSocket/WebSocketClientHandler.h"
 #include "./../Shared/WebSocket/Binary.h"
 #include "./../Shared/WebSocket/Packet.h"
 
@@ -52,10 +52,10 @@ void connect() {
 	std::string server_ip_ = std::regex_replace(location_href, std::regex("http"), "ws");
 	const char* server_ip = server_ip_.c_str();
 
-	std::cout << "Connecting to " << server_ip << " (WebSocketClient)..." << std::endl;
-	WebSocketClient* client = new WebSocketClient(server_ip);
-	client->SetOnConnectCallback([](WebSocketClient* client) {
-		std::cout << "WebSocketClient::OnConnect()" << std::endl;
+	std::cout << "Connecting to " << server_ip << " (WebSocketClientHandler)..." << std::endl;
+	WebSocketClientHandler* client = new WebSocketClientHandler(server_ip);
+	client->SetOnConnectCallback([](WebSocketClientHandler* client) {
+		std::cout << "WebSocketClientHandler::OnConnect()" << std::endl;
 
 		Binary* binary = new Binary();
 		binary->WriteUInt8(static_cast<uint8_t>(Serverbound::Connect));
@@ -64,17 +64,17 @@ void connect() {
 		client->Send(binary);
 		delete binary;
 	});
-	client->SetOnDisconnectCallback([](WebSocketClient* client) {
-		std::cout << "WebSocketClient::OnDisconnect()" << std::endl;
+	client->SetOnDisconnectCallback([](WebSocketClientHandler* client) {
+		std::cout << "WebSocketClientHandler::OnDisconnect()" << std::endl;
 		delete client;
 
 		recreate_websocket();
 	});
-	client->SetOnErrorCallback([](WebSocketClient* client) {
-		std::cout << "WebSocketClient::OnError()" << std::endl;
+	client->SetOnErrorCallback([](WebSocketClientHandler* client) {
+		std::cout << "WebSocketClientHandler::OnError()" << std::endl;
 	});
-	client->SetOnMessageCallback([](WebSocketClient* client, uint8_t* data, size_t length) {
-		// std::cout << "WebSocketClient::OnMessage()" << std::endl;
+	client->SetOnMessageCallback([](WebSocketClientHandler* client, uint8_t* data, size_t length) {
+		// std::cout << "WebSocketClientHandler::OnMessage()" << std::endl;
 
 		Binary* binary = new Binary();
 		binary->SetBuffer(data, length);

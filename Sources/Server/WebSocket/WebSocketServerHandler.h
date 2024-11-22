@@ -1,22 +1,22 @@
 #ifndef WEBSOCKET_SERVER_H
 #define WEBSOCKET_SERVER_H
 
-#include "./WebSocketClient.h"
+#include "./WebSocketClientHandler.h"
 #include <vector>
 #include <memory>
 #include "./../../Shared/WebSocket/Binary.h"
 
 class Server;
 
-class WebSocketServer {
-	typedef void (*ClientOnConnectFn)(WebSocketClient *);
-	typedef void (*ClientOnDisconnectFn)(WebSocketClient *);
-	typedef void (*ClientOnErrorFn)(WebSocketClient *);
-	typedef void (*ClientOnMessageFn)(WebSocketClient *, uint8_t *, size_t);
+class WebSocketServerHandler {
+	typedef void (*ClientOnConnectFn)(WebSocketClientHandler *);
+	typedef void (*ClientOnDisconnectFn)(WebSocketClientHandler *);
+	typedef void (*ClientOnErrorFn)(WebSocketClientHandler *);
+	typedef void (*ClientOnMessageFn)(WebSocketClientHandler *, uint8_t *, size_t);
 public:
 
-	WebSocketServer(Server* server);
-	~WebSocketServer();
+	WebSocketServerHandler(Server* server);
+	~WebSocketServerHandler();
 
 	inline Server* GetServer() { return this->m_Server; }
 	inline unsigned int GetIndex() { return this->m_uIndex; }
@@ -37,7 +37,7 @@ public:
 	}
 	inline size_t GetAcceptedClientCount() {
 		size_t count = 0;
-		for (WebSocketClient* client : this->m_Clients) {
+		for (WebSocketClientHandler* client : this->m_Clients) {
 			if (client->m_IsAccepted) {
 				++count;
 			}
@@ -45,8 +45,8 @@ public:
     	return count;
 	}
 
-	void AddClient(WebSocketClient* client);
-	bool RemoveClient(WebSocketClient* client);
+	void AddClient(WebSocketClientHandler* client);
+	bool RemoveClient(WebSocketClientHandler* client);
 
 	void SendToAllClients(Binary* binary);
 
@@ -56,7 +56,7 @@ public:
 
 private:
 	Server* m_Server;
-	std::vector<WebSocketClient*> m_Clients;
+	std::vector<WebSocketClientHandler*> m_Clients;
 
 	unsigned int m_uIndex;
 
