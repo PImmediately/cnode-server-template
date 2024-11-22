@@ -29,7 +29,7 @@ export default class WebSocketServer {
 
 	public create(): void {
 
-		if ((!this.application.WebAssemblyModule) || (typeof this.application.server !== "number")) {
+		if ((!this.application.wasmModule) || (typeof this.application.server !== "number")) {
 			throw new Error("WebAssembly module does not exist.");
 		}
 
@@ -41,27 +41,27 @@ export default class WebSocketServer {
 			this.onConnection(client, request);
 		});
 
-		const pointer = this.application.WebAssemblyModule._WebSocketServer_Create(this.application.server);
-		const serverIndex = this.application.WebAssemblyModule.HEAPU32[(pointer + (0 << 2)) >> 2]!;
-		const serverPointer = this.application.WebAssemblyModule.HEAPU32[(pointer + (1 << 2)) >> 2]!;
+		const pointer = this.application.wasmModule._WebSocketServer_Create(this.application.server);
+		const serverIndex = this.application.wasmModule.HEAPU32[(pointer + (0 << 2)) >> 2]!;
+		const serverPointer = this.application.wasmModule.HEAPU32[(pointer + (1 << 2)) >> 2]!;
 
 		this.pointer = serverPointer;
-		this.application.WebAssemblyModule.$WebSocketServers[serverIndex] = this;
+		this.application.wasmModule.$WebSocketServers[serverIndex] = this;
 
 	}
 
 	private onConnection(socket: WebSocket.WebSocket, request: http.IncomingMessage): void {
 
-		if (!this.application.WebAssemblyModule) {
+		if (!this.application.wasmModule) {
 			throw new Error("WebAssembly module does not exist.");
 		}
 		if (typeof this.pointer !== "number") {
 			throw new Error("The server has not been created.");
 		}
 
-		const pointer = this.application.WebAssemblyModule._WebSocketServer_CreateClient(this.pointer);
-		const clientIndex = this.application.WebAssemblyModule.HEAPU32[(pointer + (0 << 2)) >> 2]!;
-		const clientPointer = this.application.WebAssemblyModule.HEAPU32[(pointer + (1 << 2)) >> 2]!;
+		const pointer = this.application.wasmModule._WebSocketServer_CreateClient(this.pointer);
+		const clientIndex = this.application.wasmModule.HEAPU32[(pointer + (0 << 2)) >> 2]!;
+		const clientPointer = this.application.wasmModule.HEAPU32[(pointer + (1 << 2)) >> 2]!;
 
 		const client = new WebSocketClient(this, clientPointer, clientIndex, socket, request);
 		this.clients[clientIndex] = client;

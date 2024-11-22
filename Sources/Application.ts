@@ -15,9 +15,9 @@ export default class Application {
 		return this._webSocketServer;
 	}
 
-	private _WebAssemblyModule: (WebAssemblyModule | undefined);
-	public get WebAssemblyModule(): (WebAssemblyModule | undefined) {
-		return this._WebAssemblyModule;
+	private _wasmModule: (WebAssemblyModule | undefined);
+	public get wasmModule(): (WebAssemblyModule | undefined) {
+		return this._wasmModule;
 	}
 
 	private _server: (number | undefined);
@@ -33,14 +33,14 @@ export default class Application {
 		// DO NOT DELETE THIS
 		"@server::server_cpp.bundle.js";
 
-		this._WebAssemblyModule =
+		this._wasmModule =
 			// @ts-ignore	
 			await Module() as WebAssemblyModule;
 		// @ts-ignore
 
-		this.WebAssemblyModule!.$WebSocketServers = new Array<WebSocketServer>();
+		this.wasmModule!.$WebSocketServers = new Array<WebSocketServer>();
 
-		this._server = this.WebAssemblyModule!._Server_Create(this.WebAssemblyModule!._stringToNewUTF8("@server::version_hash"));
+		this._server = this.wasmModule!._Server_Create(this.wasmModule!._stringToNewUTF8("@server::version_hash"));
 
 	}
 
@@ -66,7 +66,7 @@ export default class Application {
 
 	public tick(): void {
 		if (this.server) {
-			this.WebAssemblyModule?._Server_Tick(this.server);
+			this.wasmModule?._Server_Tick(this.server);
 		}
 	}
 
