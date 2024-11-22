@@ -1,11 +1,15 @@
 #include "./WebSocketServerHandler.h"
 
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#endif
+
 #include <memory>
 #include <algorithm>
 #include "./../../Shared/WebSocket/Packet.h"
 
 WebSocketServerHandler::WebSocketServerHandler(Server* server) : m_Server(server) {
+#ifdef __EMSCRIPTEN__
 	this->m_uIndex = EM_ASM_INT({
 		for (let i = 0; i < servers.length; i++) {
 			if (!servers[i]) {
@@ -16,12 +20,15 @@ WebSocketServerHandler::WebSocketServerHandler(Server* server) : m_Server(server
 		servers.push(new Array());
 		return (servers.length - 1);
 	});
+#endif
 }
 
 WebSocketServerHandler::~WebSocketServerHandler() {
+#ifdef __EMSCRIPTEN__
 	EM_ASM({
 		servers[$0] = null;
 	}, this->GetIndex());
+#endif
 }
 
 void WebSocketServerHandler::AddClient(WebSocketClientHandler* client) {

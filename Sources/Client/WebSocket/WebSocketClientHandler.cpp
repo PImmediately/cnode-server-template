@@ -1,6 +1,11 @@
 #include "./WebSocketClientHandler.h"
 
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#else
+#define EMSCRIPTEN_KEEPALIVE
+#endif
+
 #include "./../../Shared/WebSocket/Binary.h"
 #include "./../../Shared/WebSocket/Packet.h"
 
@@ -19,6 +24,7 @@ std::vector<WebSocketClientHandler*> WebSocketClientHandler::_s_Instances;
 WebSocketClientHandler::WebSocketClientHandler(const char* server_ip) {
 	this->_s_Instances.push_back(this);
 
+#ifdef __EMSCRIPTEN__
 	this->m_uIndex = EM_ASM_INT({
 		const socket = new WebSocket(UTF8ToString($0));
 		socket.binaryType = "arraybuffer";
@@ -53,6 +59,7 @@ WebSocketClientHandler::WebSocketClientHandler(const char* server_ip) {
 		sockets.push(socket);
 		return (sockets.length - 1);
 	}, server_ip);
+#endif
 }
 
 WebSocketClientHandler::~WebSocketClientHandler() {
@@ -61,6 +68,7 @@ WebSocketClientHandler::~WebSocketClientHandler() {
 		this->_s_Instances.end()
 	);
 
+#ifdef __EMSCRIPTEN__
 	EM_ASM({
 		const socket = sockets[$0];
 		socket.onopen = socket.onerror = socket.onclose = socket.onmessage = () => {};
@@ -72,10 +80,11 @@ WebSocketClientHandler::~WebSocketClientHandler() {
 		}
 		sockets[$0] = null;
 	}, this->GetIndex());
+#endif
 }
 
 void WebSocketClientHandler::_PopEvent() {
-
+#ifdef __EMSCRIPTEN__
 	uint32_t pointer = NULL;
 	size_t length = NULL;
 
@@ -99,16 +108,20 @@ void WebSocketClientHandler::_PopEvent() {
 	} else if (event == kWebSocketEvent::Message) {
 		this->m_fnOnMessage(this, reinterpret_cast<uint8_t*>(pointer), length);
 	}
+#endif
 
 }
 
 bool WebSocketClientHandler::IsOpen() {
+#ifdef __EMSCRIPTEN__
 	return static_cast<bool>(EM_ASM_INT({
 		return (sockets[$0].readyState === WebSocket.OPEN);
 	}), this->GetIndex());
+#endif
 }
 
 bool WebSocketClientHandler::Send(Binary* binary) {
+#ifdef __EMSCRIPTEN__
 	uint8_t* buffer = binary->GetBuffer();
 	bool result = EM_ASM_INT({
 		const socket = sockets[$0];
@@ -125,6 +138,7 @@ bool WebSocketClientHandler::Send(Binary* binary) {
 	
 	delete buffer;
 	return result;
+#endif
 }
 
 void WebSocketClientHandler::Ping() {

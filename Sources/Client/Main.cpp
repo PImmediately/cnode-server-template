@@ -1,4 +1,8 @@
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#else
+#define EMSCRIPTEN_KEEPALIVE
+#endif
 
 #include <iostream>
 #include <regex>
@@ -9,42 +13,54 @@
 #include "./../Shared/WebSocket/Packet.h"
 
 char* get_version_hash() {
+#ifdef __EMSCRIPTEN__
 	return (char*)EM_ASM_PTR({
 		return stringToNewUTF8("@server::version_hash");
 	});
+#endif
 }
 
 char* get_location_href() {
+#ifdef __EMSCRIPTEN__
 	return (char*)EM_ASM_PTR({
 		return stringToNewUTF8(window.location.href);
 	});
+#endif
 }
 
 void reload_page() {
+#ifdef __EMSCRIPTEN__
 	EM_ASM({
 		window.onbeforeunload = null;
 		window.location.reload();
 	});
+#endif
 }
 
 void recreate_websocket() {
+#ifdef __EMSCRIPTEN__
 	EM_ASM({
 		setTimeout(() => {
 			Module["_CreateWebSocket"]();
 		}, 500);
 	});
+#endif
 }
 
 void set_ping(int ping) {
+#ifdef __EMSCRIPTEN__
 	EM_ASM({
 		document.querySelector("#ping").textContent = ($0 / 1000 / 1000).toFixed(1);
 	}, ping);
+#endif
 }
 
 void set_client_count(unsigned int client_count) {
+#ifdef __EMSCRIPTEN__
 	EM_ASM({
 		document.querySelector("#client-count").textContent = String($0);
 	}, client_count);
+#endif
 }
 
 void connect() {
@@ -119,6 +135,8 @@ int main() {
 
 	connect();
 
+#ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(main_loop, 60, true);
+#endif
 	return 0;
 }
