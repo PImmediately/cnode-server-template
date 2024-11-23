@@ -7,7 +7,6 @@
 #endif
 
 #include "./WebSocketServerHandler.h"
-#include <iostream>
 
 WebSocketClientHandler::WebSocketClientHandler(WebSocketServerHandler* ws_server) : m_WSServer(ws_server) {
 #ifdef __EMSCRIPTEN__

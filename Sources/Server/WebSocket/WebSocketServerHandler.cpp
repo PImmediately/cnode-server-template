@@ -6,8 +6,6 @@
 #define EMSCRIPTEN_KEEPALIVE
 #endif
 
-#include <memory>
-#include <algorithm>
 #include "./../../Shared/WebSocket/Packet.h"
 
 WebSocketServerHandler::WebSocketServerHandler(Server* server) : m_Server(server) {

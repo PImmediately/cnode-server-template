@@ -3,7 +3,6 @@
 
 #include "./WebSocketClientHandler.h"
 #include <vector>
-#include <memory>
 #include "./../../Shared/WebSocket/Binary.h"
 
 class Server;

@@ -1,7 +1,6 @@
 #ifndef WEBSOCKET_CLIENT_H
 #define WEBSOCKET_CLIENT_H
 
-#include <functional>
 #include "./../../Shared/WebSocket/Binary.h"
 
 class WebSocketServerHandler; 
