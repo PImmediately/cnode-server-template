@@ -1,5 +1,5 @@
-#ifndef WEBSOCKET_CLIENT_H
-#define WEBSOCKET_CLIENT_H
+#ifndef WEBSOCKET_CLIENT_HANDLER_H
+#define WEBSOCKET_CLIENT_HANDLER_H
 
 #include "./../../Shared/WebSocket/Binary.h"
 
@@ -26,4 +26,4 @@ private:
 
 };
 
-#endif // WEBSOCKET_CLIENT_H
+#endif // WEBSOCKET_CLIENT_HANDLER_H

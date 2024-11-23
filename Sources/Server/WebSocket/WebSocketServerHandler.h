@@ -1,5 +1,5 @@
-#ifndef WEBSOCKET_SERVER_H
-#define WEBSOCKET_SERVER_H
+#ifndef WEBSOCKET_SERVER_HANDLER_H
+#define WEBSOCKET_SERVER_HANDLER_H
 
 #include "./WebSocketClientHandler.h"
 #include <vector>
@@ -59,4 +59,4 @@ private:
 
 };
 
-#endif // WEBSOCKET_SERVER_H
+#endif // WEBSOCKET_SERVER_HANDLER_H
