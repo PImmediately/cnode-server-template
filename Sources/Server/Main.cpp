@@ -92,17 +92,6 @@ WebSocketServerHandler* create_websocket_server(Server* server) {
 }
 
 extern "C" {
-	Server* EMSCRIPTEN_KEEPALIVE Server_Create(char* version_hash) {
-		Server* server = new Server(version_hash);
-		return server;
-	}
-	void EMSCRIPTEN_KEEPALIVE Server_Delete(Server* server) {
-		delete server;
-	}
-	void EMSCRIPTEN_KEEPALIVE Server_Tick(Server* server) {
-		server->Tick();		
-	}
-
 	uint32_t* EMSCRIPTEN_KEEPALIVE WebSocketServerHandler_Create(Server* server) {
 		WebSocketServerHandler* ws_server = create_websocket_server(server);
 		uint32_t result[2] = {
@@ -110,29 +99,6 @@ extern "C" {
 			static_cast<uint32_t>(reinterpret_cast<uintptr_t>(ws_server))
 		};
 		return result;
-	}
-	uint32_t* EMSCRIPTEN_KEEPALIVE WebSocketServerHandler_CreateClientHandler(WebSocketServerHandler* ws_server) {
-		WebSocketClientHandler* ws_client = new WebSocketClientHandler(ws_server);
-		ws_server->AddClient(ws_client);
-
-		uint32_t result[2] = {
-			ws_client->GetIndex(),
-			static_cast<uint32_t>(reinterpret_cast<uintptr_t>(ws_client))
-		};
-		return result;
-	}
-
-	void EMSCRIPTEN_KEEPALIVE WebSocketClientHandler_EmitOnConnect(WebSocketClientHandler* ws_client) {
-		ws_client->GetWebSocketServerHandler()->_m_fnClientOnConnect(ws_client);
-	}
-	void EMSCRIPTEN_KEEPALIVE WebSocketClientHandler_EmitOnDisconnect(WebSocketClientHandler* ws_client) {
-		ws_client->GetWebSocketServerHandler()->_m_fnClientOnDisconnect(ws_client);
-	}
-	void EMSCRIPTEN_KEEPALIVE WebSocketClientHandler_EmitOnError(WebSocketClientHandler* ws_client) {
-		ws_client->GetWebSocketServerHandler()->_m_fnClientOnError(ws_client);
-	}
-	void EMSCRIPTEN_KEEPALIVE WebSocketClientHandler_EmitOnMessage(WebSocketClientHandler* ws_client, uint8_t* data, const size_t length) {
-		ws_client->GetWebSocketServerHandler()->_m_fnClientOnMessage(ws_client, data, length);
 	}
 }
 

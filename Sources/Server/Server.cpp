@@ -1,5 +1,11 @@
 #include "./Server.h"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#else
+#define EMSCRIPTEN_KEEPALIVE
+#endif
+
 #include <iostream>
 
 Server::Server(char* version_hash) : m_strVersionHash(version_hash) {
@@ -30,5 +36,18 @@ void Server::Tick() {
 		std::cout << "[Server]" << " " << "tps:" << " " << this->m_uTPS << std::endl;
 		this->m_uTPS = 0;
 		this->m_uLastTPSCheckedAt = std::chrono::high_resolution_clock::now();
+	}
+}
+
+extern "C" {
+	Server* EMSCRIPTEN_KEEPALIVE Server_Create(char* version_hash) {
+		Server* server = new Server(version_hash);
+		return server;
+	}
+	void EMSCRIPTEN_KEEPALIVE Server_Delete(Server* server) {
+		delete server;
+	}
+	void EMSCRIPTEN_KEEPALIVE Server_Tick(Server* server) {
+		server->Tick();		
 	}
 }

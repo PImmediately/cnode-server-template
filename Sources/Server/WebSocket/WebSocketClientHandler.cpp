@@ -2,6 +2,8 @@
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#else
+#define EMSCRIPTEN_KEEPALIVE
 #endif
 
 #include "./WebSocketServerHandler.h"
@@ -60,4 +62,19 @@ void WebSocketClientHandler::Kick() {
 		Module["$WebSocketServers"][$0].clients[$1].kick();
 	}, this->GetWebSocketServerHandler()->GetIndex(), this->GetIndex());
 #endif
+}
+
+extern "C" {
+	void EMSCRIPTEN_KEEPALIVE WebSocketClientHandler_EmitOnConnect(WebSocketClientHandler* ws_client) {
+		ws_client->GetWebSocketServerHandler()->_m_fnClientOnConnect(ws_client);
+	}
+	void EMSCRIPTEN_KEEPALIVE WebSocketClientHandler_EmitOnDisconnect(WebSocketClientHandler* ws_client) {
+		ws_client->GetWebSocketServerHandler()->_m_fnClientOnDisconnect(ws_client);
+	}
+	void EMSCRIPTEN_KEEPALIVE WebSocketClientHandler_EmitOnError(WebSocketClientHandler* ws_client) {
+		ws_client->GetWebSocketServerHandler()->_m_fnClientOnError(ws_client);
+	}
+	void EMSCRIPTEN_KEEPALIVE WebSocketClientHandler_EmitOnMessage(WebSocketClientHandler* ws_client, uint8_t* data, const size_t length) {
+		ws_client->GetWebSocketServerHandler()->_m_fnClientOnMessage(ws_client, data, length);
+	}
 }

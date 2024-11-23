@@ -2,6 +2,8 @@
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#else
+#define EMSCRIPTEN_KEEPALIVE
 #endif
 
 #include <memory>
@@ -66,5 +68,18 @@ void WebSocketServerHandler::SendClientCountToAllClients() {
 void WebSocketServerHandler::Tick() {
 	for (WebSocketClientHandler* client : this->m_Clients) {
 		client->EmitCachedReceivedMessages();
+	}
+}
+
+extern "C" {
+	uint32_t* EMSCRIPTEN_KEEPALIVE WebSocketServerHandler_CreateClientHandler(WebSocketServerHandler* ws_server) {
+		WebSocketClientHandler* ws_client = new WebSocketClientHandler(ws_server);
+		ws_server->AddClient(ws_client);
+
+		uint32_t result[2] = {
+			ws_client->GetIndex(),
+			static_cast<uint32_t>(reinterpret_cast<uintptr_t>(ws_client))
+		};
+		return result;
 	}
 }
