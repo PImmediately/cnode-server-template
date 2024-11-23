@@ -31,12 +31,18 @@ public:
 
 	void Tick();
 
+	inline unsigned int GetDeltaTimeInTick() { return this->m_uDeltaTimeInTick; }
+	inline unsigned int GetTPS() { return this->m_uTPS; }
+
 private:
 	char* m_strVersionHash;
 
 	std::vector<WebSocketServerHandler*> m_WSServers;
 
+	unsigned int m_uDeltaTimeInTick = 0;
+
 	unsigned int m_uTPS = 0;
+	unsigned int m_u_TPS = 0;
 	std::chrono::steady_clock::time_point m_uLastTPSCheckedAt = std::chrono::high_resolution_clock::now();
 
 };
