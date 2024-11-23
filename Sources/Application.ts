@@ -65,9 +65,9 @@ export default class Application {
 	}
 
 	public tick(): void {
-		if (this.server) {
-			this.wasmModule?._Server_Tick(this.server);
-		}
+
+		this.wsServer?.tick();
+
 	}
 
 }

@@ -49,8 +49,6 @@ WebSocketServerHandler* create_websocket_server(Server* server) {
 
 			client->Send(binary);
 			delete binary;
-		} else {
-			client->PushCachedReceivedMessage(data, length);
 		}
 
 		delete binary;

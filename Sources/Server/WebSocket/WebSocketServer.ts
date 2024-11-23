@@ -69,4 +69,16 @@ export default class WebSocketServer {
 
 	}
 
+	public tick(): void {
+
+		this.clients.forEach((client) => {
+			client.tick();
+		});
+
+		if (this.application.server) {
+			this.application.wasmModule?._Server_Tick(this.application.server);
+		}
+
+	}
+
 }

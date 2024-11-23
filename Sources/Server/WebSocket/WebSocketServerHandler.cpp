@@ -65,12 +65,6 @@ void WebSocketServerHandler::SendClientCountToAllClients() {
 	delete binary;
 }
 
-void WebSocketServerHandler::Tick() {
-	for (WebSocketClientHandler* client : this->m_Clients) {
-		client->EmitCachedReceivedMessages();
-	}
-}
-
 extern "C" {
 	uint32_t* EMSCRIPTEN_KEEPALIVE WebSocketServerHandler_CreateClientHandler(WebSocketServerHandler* ws_server) {
 		WebSocketClientHandler* ws_client = new WebSocketClientHandler(ws_server);

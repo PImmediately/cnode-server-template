@@ -52,8 +52,6 @@ public:
 
 	void SendClientCountToAllClients();
 
-	void Tick();
-
 private:
 	Server* m_Server;
 	std::vector<WebSocketClientHandler*> m_Clients;

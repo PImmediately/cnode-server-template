@@ -4,6 +4,8 @@ import type WebSocket from "ws";
 
 export default class WebSocketClient {
 
+	private readonly cachedReceivedMessages = new Array<Uint8Array>();
+
 	public constructor(
 		public readonly server: WebSocketServer,
 		public readonly pointer: number,
@@ -54,12 +56,17 @@ export default class WebSocketClient {
 		}
 
 		const buffer = new Uint8Array(data);
+		this.cachedReceivedMessages.push(buffer);
 
+		this.emitOnMessage(buffer, false);
+
+	}
+
+	private emitOnMessage(buffer: Uint8Array, isCached: boolean): void {
 		const pointer = this.server.application.wasmModule!._malloc(buffer.length);
 		this.server.application.wasmModule!.HEAPU8.set(buffer, pointer);
-		this.server.application.wasmModule!._WebSocketClientHandler_EmitOnMessage(this.pointer, pointer, buffer.length);
+		this.server.application.wasmModule![(!isCached) ? "_WebSocketClientHandler_EmitOnMessage" : "_WebSocketClientHandler_EmitOnMessageInTick"](this.pointer, pointer, buffer.length);
 		this.server.application.wasmModule!._free(pointer);
-
 	}
 
 	public send(buffer: Uint8Array): void {
@@ -68,6 +75,15 @@ export default class WebSocketClient {
 
 	public kick(): void {
 		this.socket.close();
+	}
+
+	public tick(): void {
+
+		for (let i: number = 0; i < this.cachedReceivedMessages.length; i++) {
+			const message = this.cachedReceivedMessages.shift()!;
+			this.emitOnMessage(message, true);
+		}
+
 	}
 
 }

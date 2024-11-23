@@ -17,9 +17,7 @@ void Server::Tick() {
 	// tick
 	{
 
-		for (WebSocketServerHandler* wsServer : this->m_WSServers) {
-			wsServer->Tick();
-		}
+		// do something
 
 	}
 

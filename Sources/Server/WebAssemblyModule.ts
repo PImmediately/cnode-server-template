@@ -28,5 +28,6 @@ export default interface WebAssemblyModule {
 	_WebSocketClientHandler_EmitOnDisconnect: (client: number) => void;
 	_WebSocketClientHandler_EmitOnError: (client: number) => void;
 	_WebSocketClientHandler_EmitOnMessage: (client: number, pointer: number, length: number) => void;
+	_WebSocketClientHandler_EmitOnMessageInTick: (client: number, pointer: number, length: number) => void;
 
 }

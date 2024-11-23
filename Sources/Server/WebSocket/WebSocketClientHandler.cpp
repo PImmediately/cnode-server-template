@@ -33,17 +33,6 @@ WebSocketClientHandler::~WebSocketClientHandler() {
 #endif
 }
 
-void WebSocketClientHandler::PushCachedReceivedMessage(uint8_t* data, size_t length) {
-	this->m_uCachedReceivedMessages.emplace_back(data, (data + length));
-}
-
-void WebSocketClientHandler::EmitCachedReceivedMessages() {
-	for (auto message = this->m_uCachedReceivedMessages.begin(); message != this->m_uCachedReceivedMessages.end(); ) {
-		this->GetWebSocketServerHandler()->_m_fnClientOnMessageInTick(this, message->data(), message->size());
-		message = this->m_uCachedReceivedMessages.erase(message);
-	}
-}
-
 void WebSocketClientHandler::Send(Binary* binary) {
 	uint8_t* buffer = binary->GetBuffer();
 #ifdef __EMSCRIPTEN__
@@ -76,5 +65,8 @@ extern "C" {
 	}
 	void EMSCRIPTEN_KEEPALIVE WebSocketClientHandler_EmitOnMessage(WebSocketClientHandler* ws_client, uint8_t* data, const size_t length) {
 		ws_client->GetWebSocketServerHandler()->_m_fnClientOnMessage(ws_client, data, length);
+	}
+	void EMSCRIPTEN_KEEPALIVE WebSocketClientHandler_EmitOnMessageInTick(WebSocketClientHandler* ws_client, uint8_t* data, const size_t length) {
+		ws_client->GetWebSocketServerHandler()->_m_fnClientOnMessageInTick(ws_client, data, length);
 	}
 }
